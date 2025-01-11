@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct MemoryGameView: View {
   
+  @State var viewModel = MemoryGameViewModel()
   var emojis = ["🦊", "🐮", "🐵", "🐶", "🦁", "🐼", "🐷", "🐯"]
-  @State var cardCount = 2
   
   var body: some View {
     cards
@@ -24,9 +24,9 @@ struct ContentView: View {
   
   var cards: some View {
     ScrollView {
-      LazyVGrid(columns: [GridItem(), GridItem()]) {
-        ForEach(0..<cardCount, id: \.self) { index in
-          CardView(emoji: emojis[index], isSelected: false)
+      LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))]) {
+        ForEach(emojis.indices, id: \.self) { index in
+          CardView(emoji: emojis[index])
         }
         .aspectRatio(2/3, contentMode: .fit)
       }
@@ -36,17 +36,17 @@ struct ContentView: View {
   
   var addButton: some View {
     buttonAction(configureCard: 1, imageName: "rectangle.stack.fill.badge.plus")
-      .disabled(cardCount >= emojis.count)
+    //      .disabled(cardCount >= emojis.count)
   }
   
   var removeButton: some View {
     buttonAction(configureCard: -1, imageName: "rectangle.stack.fill.badge.minus")
-      .disabled(cardCount <= 0)
+    //      .disabled(cardCount <= 0)
   }
   
   func buttonAction(configureCard: Int, imageName: String) -> some View {
     Button {
-      cardCount += configureCard
+      //      cardCount += configureCard
     } label: {
       Image(systemName: imageName)
     }
@@ -58,7 +58,7 @@ struct ContentView: View {
 struct CardView: View {
   let emoji: String
   
-  @State var isSelected: Bool = false
+  @State var isSelected: Bool = true
   
   var body: some View {
     ZStack {
@@ -77,5 +77,5 @@ struct CardView: View {
 }
 
 #Preview {
-  ContentView()
+  MemoryGameView()
 }
