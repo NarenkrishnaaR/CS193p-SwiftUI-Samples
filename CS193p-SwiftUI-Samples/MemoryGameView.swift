@@ -14,6 +14,7 @@ struct MemoryGameView: View {
   var body: some View {
     VStack {
       cards
+        .animation(.default, value: viewModel.cards)
       shuffluButton
     }
     .padding()
@@ -24,46 +25,50 @@ struct MemoryGameView: View {
       viewModel.shuffle()
     }
   }
-  
-  var cards: some View {
-    ScrollView {
-      LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))]) {
-        ForEach(viewModel.cards.indices, id: \.self) { index in
-          CardView(viewModel.cards[index])
-            .aspectRatio(2/3, contentMode: .fit)
-            .padding(2)
+    
+    var cards: some View {
+      ScrollView {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 85))]) {
+          ForEach(viewModel.cards) { card in
+            CardView(card)
+              .aspectRatio(2/3, contentMode: .fit)
+              .padding(2)
+              .onTapGesture {
+                viewModel.choose(card)
+              }
+          }
         }
       }
+      .padding()
     }
-    .padding()
-  }
-}
-
-struct CardView: View {
-  private var card: MemoryGameModel<String>.Card
-  
-  init(_ card: MemoryGameModel<String>.Card) {
-    self.card = card
   }
   
-  var body: some View {
-    ZStack {
-      let rectangle = RoundedRectangle(cornerRadius: 12)
-      Group {
-        rectangle.fill(.white)
-        rectangle.strokeBorder(lineWidth: 2)
-        Text(card.content)
-          .font(.system(size: 200))
-          .minimumScaleFactor(0.01)
-          .aspectRatio(1, contentMode: .fit)
+  struct CardView: View {
+    private var card: MemoryGameModel<String>.Card
+    
+    init(_ card: MemoryGameModel<String>.Card) {
+      self.card = card
+    }
+    
+    var body: some View {
+      ZStack {
+        let rectangle = RoundedRectangle(cornerRadius: 12)
+        Group {
+          rectangle.fill(.white)
+          rectangle.strokeBorder(lineWidth: 2)
+          Text(card.content)
+            .font(.system(size: 200))
+            .minimumScaleFactor(0.01)
+            .aspectRatio(1, contentMode: .fit)
+        }
+        .opacity(card.isFaceUp ? 1 : 0)
+        rectangle.fill()
+          .opacity(card.isFaceUp ? 0 : 1)
       }
-      .opacity(card.isFaceUp ? 1 : 0)
-      rectangle.fill()
-        .opacity(card.isFaceUp ? 0 : 1)
     }
   }
-}
+  
+  #Preview {
+    MemoryGameView(viewModel: MemoryGameViewModel())
+  }
 
-#Preview {
-  MemoryGameView(viewModel: MemoryGameViewModel())
-}

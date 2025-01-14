@@ -5,7 +5,9 @@
 //  Created by Naren on 05/01/25.
 //
 
-struct MemoryGameModel<CardContent> {
+import Foundation
+
+struct MemoryGameModel<CardContent> where CardContent: Equatable {
   
   private(set) var cards: Array<Card>
   
@@ -18,8 +20,11 @@ struct MemoryGameModel<CardContent> {
     }
   }
   
-  func choose(_ card: Card) {
-    
+  mutating func choose(_ card: Card) {
+    guard let index = cards.firstIndex(of: card) else {
+      return
+    }
+    cards[index].isFaceUp.toggle()
   }
   
   mutating func shuffle() {
@@ -28,9 +33,12 @@ struct MemoryGameModel<CardContent> {
   
   func flipCard(_ card: Card) { }
   
-  struct Card {
+  struct Card: Equatable, Identifiable {
+    var id = UUID().uuidString
+    
     var isFaceUp = true
     var isMatched = false
     var content: CardContent
+    
   }
 }
